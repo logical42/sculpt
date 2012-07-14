@@ -38,13 +38,10 @@ class Tag < ElementContainer
     
     def generate_html(ugly = false)
         pp = Sculpt.pretty and not ugly  
-                      
+           
         n = @name.to_s
-        open = "<#{n}"
-        @attrs.each do |k, v|
-            open += " #{attr_replace(k)}=\"#{v}\""
-        end
-        open += '>'
+        open = apply_attributes(@attrs, "<#{n}")
+        open << '>'
         return open if @singleton
         close = "</#{n}>"
         return open + @text + close unless @elements.any?
@@ -85,6 +82,23 @@ class Tag < ElementContainer
         else
             set_up(args[0], args[1], &block)
         end
+    end
+    private
+    def apply_attributes(attributes, open_tag_content)
+        attributes.each do |key, value| 
+            if value.is_a?(Hash)
+                ## accept nested hashes like content_tag Rails 
+                ## ex. div 'some div content', data: {attr1: 'value of data-attr1', attr2: 'value of data-attr2'}
+                ## -> <div data-attr1='value of data-attr1' data-attr2='value of data-attr2'>some div content</div>
+
+                value.each do |nested_key, nested_value| 
+                    open_tag_content << " #{key}-#{nested_key}=\"#{nested_value}\"" 
+                end
+            else
+                open_tag_content << " #{attr_replace(key)}=\"#{value}\""
+            end
+        end
+        return open_tag_content
     end
 end
 

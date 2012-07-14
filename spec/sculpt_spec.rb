@@ -68,5 +68,10 @@ describe Sculpt do
                 p "Quack", data_said_by: :a_duck
             end.should eq "<p data-said-by=\"a_duck\">Quack</p>"
         end
+        it 'should take nested hashes for the data element and be able to parse it properly' do
+            Sculpt.make do
+                div 'some stuff', data: { name: 'first last', email: 'some@email.com' }
+            end.should eq "<div data-name=\"first last\" data-email=\"some@email.com\">some stuff</div>"
+        end
     end
 end

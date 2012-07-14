@@ -25,11 +25,7 @@ class Sculpture < ElementContainer
     
     def p(text='',attrs = {},&block)
         # necessary to override the Kernel#p method
-        if text.is_a? String
-            txt = text.unindent.lstrip # for multi-line strings
-        else
-            txt = text
-        end
+        txt = text.is_a?(String) ? text.unindent.lstrip : text # for multi-line strings
         add_tag Tag.new(:p, txt, attrs, &block)
     end
     
